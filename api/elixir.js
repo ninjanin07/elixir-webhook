@@ -60,8 +60,17 @@ export default async function handler(req, res) {
       return res.status(400).send('Invalid activation payload');
     }
 
-    console.log('✅ VALID RETURNTHIS:', payload.data.returnThis);
-    const encrypted = encryptReturnThis(payload.data.returnThis);
+    const returnThis = payload.data.returnThis;
+    console.log('✅ VALID RETURNTHIS:', returnThis);
+
+    // 🔁 Forward to n8n webhook
+    await fetch('http://localhost:5678/webhook/elixir-forward', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(returnThis)
+    });
+
+    const encrypted = encryptReturnThis(returnThis);
     res.setHeader('Content-Type', 'text/plain');
     return res.status(200).send(encrypted);
   } catch (err) {
