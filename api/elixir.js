@@ -60,7 +60,7 @@ export default async function handler(req, res) {
       return res.status(400).send('Invalid activation payload');
     }
 
-    const returnThis = payload.data.returnThis;
+        const returnThis = payload.data.returnThis;
     console.log('✅ VALID RETURNTHIS:', returnThis);
 
     // 📨 Forward to local n8n webhook
@@ -69,8 +69,8 @@ export default async function handler(req, res) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(returnThis)
     });
-    
-    const encrypted = encryptReturnThis(payload.data.returnThis);
+
+    const encrypted = encryptReturnThis(returnThis);
     res.setHeader('Content-Type', 'text/plain');
     return res.status(200).send(encrypted);
   } catch (err) {
