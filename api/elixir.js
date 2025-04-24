@@ -60,11 +60,11 @@ export default async function handler(req, res) {
       return res.status(400).send('Invalid activation payload');
     }
 
-    const returnThis = payload.data.returnThis;
+        const returnThis = payload.data.returnThis;
     console.log('✅ VALID RETURNTHIS:', returnThis);
 
-    // 🔁 Forward to n8n webhook
-    await fetch('http://localhost:5678/webhook/elixir-forward', {
+    // 📨 Forward to local n8n webhook
+    await fetch('https://nzskinhealth.app.n8n.cloud/webhook/elixir-activation', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(returnThis)
