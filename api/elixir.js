@@ -55,10 +55,12 @@ export default async function handler(req, res) {
     const decrypted = decryptPayload(base64);
     const payload = JSON.parse(decrypted);
 
-    if (payload.eventType !== 'ACTIVATION' || !payload.data?.returnThis) {
-      console.log('❌ Invalid activation payload');
-      return res.status(400).send('Invalid activation payload');
-    }
+    console.log(`📨 Received event: ${payload.eventType}`);
+
+    if (!payload.data?.returnThis) {
+      console.log('❌ Missing returnThis');
+      return res.status(400).send('Missing returnThis');
+    }    
 
         const returnThis = payload.data.returnThis;
     console.log('✅ VALID RETURNTHIS:', returnThis);
