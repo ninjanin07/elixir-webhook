@@ -57,24 +57,36 @@ export default async function handler(req, res) {
 
     console.log(`📨 Received event: ${payload.eventType}`);
 
-    if (!payload.data?.returnThis) {
-      console.log('❌ Missing returnThis');
-      return res.status(400).send('Missing returnThis');
-    }    
+    if (payload.eventType === 'ACTIVATION') {
+      if (!payload.data?.returnThis) {
+        console.log('❌ Missing returnThis');
+        return res.status(400).send('Missing returnThis');
+      }
 
-        const returnThis = payload.data.returnThis;
-    console.log('✅ VALID RETURNTHIS:', returnThis);
+      const returnThis = payload.data.returnThis;
+      console.log('✅ VALID RETURNTHIS:', returnThis);
 
-    // 📨 Forward to local n8n webhook
+      // Forward returnThis to n8n
+      await fetch('https://nzskinhealth.app.n8n.cloud/webhook/elixir-activation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(returnThis)
+      });
+
+      const encrypted = encryptReturnThis(returnThis);
+      res.setHeader('Content-Type', 'text/plain');
+      return res.status(200).send(encrypted);
+    }
+
+    // For other events (e.g., appointments), forward entire payload
+    console.log('🔁 Forwarding event to n8n webhook');
     await fetch('https://nzskinhealth.app.n8n.cloud/webhook/elixir-activation', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(returnThis)
+      body: JSON.stringify(payload)
     });
 
-    const encrypted = encryptReturnThis(returnThis);
-    res.setHeader('Content-Type', 'text/plain');
-    return res.status(200).send(encrypted);
+    return res.status(200).send('OK');
   } catch (err) {
     console.error('❌ Webhook Error:', err);
     return res.status(400).send('Webhook Error');
