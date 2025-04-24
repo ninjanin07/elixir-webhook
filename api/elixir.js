@@ -64,7 +64,7 @@ export default async function handler(req, res) {
     console.log('✅ VALID RETURNTHIS:', returnThis);
 
     // 📨 Forward to local n8n webhook
-    await fetch('http://localhost:5678/webhook/elixir-forward', {
+    await fetch('https://nzskinhealth.app.n8n.cloud/webhook/elixir-activation', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(returnThis)
